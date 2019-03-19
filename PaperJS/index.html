@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Load the Paper.js library -->
+<script type="text/javascript" src="js/paperjs-v0.12.0/dist/paper-full.js"></script>
+<!-- Define inlined PaperScript associate it with myCanvas -->
+<script type="text/paperscript" canvas="myCanvas">
+
+
+//============================================================================//
+// The amount of circles we want to make:
+var count = 150;
+var mouseRadius = 100;
+var dots = [];
+
+var firstLayer = project.activeLayer;
+// var connections = new Group([]);
+//
+for(var i = 0; i < count;i++) {
+	var crcl = new Path.Circle({
+		center: Point.random() * view.size,
+		radius: 5,
+		fillColor: 'black'
+	});
+	var rand = (Point.random().x)/3;
+	if(Point.random().x > 0.5) {
+		crcl.delta_x = -rand;
+	} else {
+		crcl.delta_x = rand;
+	}
+	if(Point.random().x > 0.5) {
+		crcl.delta_y = -rand;
+	} else {
+		crcl.delta_y = rand;
+	}
+	dots.push(crcl);
+}
+//
+// function onMouseMove(event) {
+// 	createConnectionsWith(dots, event.point);
+// }
+//
+// function createConnectionsWith(dots, point) {
+// 	for(var i = 0;i < count; i++) {
+// 		if(point.getDistance(dots[i].position) < mouseRadius) {
+// 			connections.children.push(new Path.Line({
+// 		    from: point,
+// 		    to: dots[i].position,
+// 		    strokeColor: 'black'
+// 			}));
+// 		}
+// 	}
+// }
+//
+// //
+// //
+// // // Create a symbol, which we will use to place instances of later:
+// // var path = new Path.Circle({
+// // 	center: [0, 0],
+// // 	radius: 0.5,
+// // 	fillColor: 'black',
+// // 	strokeColor: 'black'
+// // });
+// //
+// // var symbol = new Symbol(path);
+// //
+// // // Place the instances of the symbol:
+// // for (var i = 0; i < count; i++) {
+// // 	// The center position is a random point in the view:
+// // 	var center = Point.random() * view.size;
+// // 	var placedSymbol = symbol.place(center);
+// // 	var rand = (Point.random().x)/3;
+// // 	if(Point.random().x > 0.5) {
+// // 		placedSymbol.delta_x = -rand;
+// // 	} else {
+// // 		placedSymbol.delta_x = rand;
+// // 	}
+// // 	if(Point.random().x > 0.5) {
+// // 		placedSymbol.delta_y = -rand;
+// // 	} else {
+// // 		placedSymbol.delta_y = rand;
+// // 	}
+// // }
+//
+function onFrame(event) {
+	// connections.children = [];
+	for (var i = 0; i < count; i++) {
+		var dot = dots[i];
+
+		dot.position.x += dot.delta_x;
+		dot.position.y += dot.delta_y;
+
+		if(dot.position.x > view.size.width) {
+			dot.delta_x *= -1;
+		} else if(dot.position.x < 0) {
+			dot.delta_x *= -1;
+		}
+		if(dot.position.y > view.size.height) {
+			dot.delta_y *= -1;
+		} else if(dot.position.y < 0) {
+			dot.delta_y *= -1;
+		}
+	}
+}
+// //============================================================================//
+
+// tool.fixedDistance = 10;
+var secondLayer = new Layer();
+secondLayer.activate();
+function onMouseMove(event) {
+	// The radius of the circle is the distance we moved
+	// divided by 2:
+	// var radius = 5;
+
+	// Create a circle shaped path at the point in the middle between
+	// the current position of the mouse and the last position of
+	// the mouse:
+	for(var i = 0; i < count; i++) {
+		var dot = dots[i]
+		if(dot.position.getDistance(event.point) < mouseRadius) {
+			var path = new Path.Line({
+				to: dot.position,
+				from: event.point,
+				strokeColor: 'black'
+			});
+		}
+	}
+
+	// The hue is defined by the amount of times the onMouseMove
+	// event has been fired, multiplied by 10:
+	// path.fillColor = {
+	// 	hue: event.count * 3,
+	// 	saturation: 1,
+	// 	brightness: 1
+	// };
+
+	// If we created at least 8 paths, remove the first
+	// path in the layer.
+	for(var i = 0;i < secondLayer.children.length; i++) {
+		var child = secondLayer.children[i];
+		if(child > mouseRadius){
+	}
+	if (secondLayer.children.length > 5)
+		secondLayer.firstChild.remove();
+	return false; // Prevent touch scrolling
+}
+
+</script>
+
+<!-- resize script -->
+<script type="text/javascript">
+      function resize_canvas(){
+          canvas = document.getElementById("myCanvas");
+          if (canvas.width < window.innerWidth || canvas.width < window.innerWidth) {
+              canvas.width = window.innerWidth;
+          }
+          if (canvas.height < window.innerHeight || canvas.height < window.innerHeight) {
+              canvas.height = window.innerHeight;
+          }
+      }
+</script>
+
+</head>
+<body onresize="resize_canvas()">
+	<canvas id="myCanvas" width="3000" height="1000"></canvas>
+</body>
+</html>
